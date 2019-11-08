@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 project(low-latency-training)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 option(NO_OMIT_FP "Add -fno-omit-frame-pointer" FALSE)
 if(NO_OMIT_FP)
