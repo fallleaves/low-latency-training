@@ -63,44 +63,45 @@ static void accumulate(benchmark::State &state)
 
   state.SetBytesProcessed(elements * sizeof(int) * state.iterations() * 2);
   state.counters["data"] = elements * sizeof(int);
+}
 
-  template <typename Container>
-  static void accumulateRandom(benchmark::State & state)
+template <typename Container>
+static void accumulateRandom(benchmark::State &state)
+{
+  Container container;
+  Container index;
+
+  auto elements = state.range(0);
+
+  fill(container, elements);
+  fillIndex(index, elements);
+  shuffleIndex(index);
+
+  int sum = 0;
+
+  for (auto _ : state)
   {
-    Container container;
-    Container index;
-
-    auto elements = state.range(0);
-
-    fill(container, elements);
-    fillIndex(index, elements);
-    shuffleIndex(index);
-
-    int sum = 0;
-
-    for (auto _ : state)
+    for (auto i : index)
     {
-      for (auto i : index)
-      {
-        sum += container[i];
-      }
-
-      benchmark::DoNotOptimize(&sum);
+      sum += container[i];
     }
 
-    state.SetBytesProcessed(elements * sizeof(int) * state.iterations() * 2);
-    state.counters["data"] = elements * sizeof(int);
+    benchmark::DoNotOptimize(&sum);
   }
 
-  // BENCHMARK_TEMPLATE(accumulate, std::list<int>)
-  //     ->RangeMultiplier(1024)
-  //     ->Range(1ull << 10, 2ull << 10 << 10);
-  BENCHMARK_TEMPLATE(accumulate, std::vector<int>)
-      ->RangeMultiplier(2)
-      ->Range(1ull << 10, 1ull << 20);
+  state.SetBytesProcessed(elements * sizeof(int) * state.iterations() * 2);
+  state.counters["data"] = elements * sizeof(int);
+}
 
-  BENCHMARK_TEMPLATE(accumulateRandom, std::vector<int>)
-      ->RangeMultiplier(2)
-      ->Range(1ull << 10, 1ull << 20);
+// BENCHMARK_TEMPLATE(accumulate, std::list<int>)
+//     ->RangeMultiplier(1024)
+//     ->Range(1ull << 10, 2ull << 10 << 10);
+BENCHMARK_TEMPLATE(accumulate, std::vector<int>)
+    ->RangeMultiplier(2)
+    ->Range(1ull << 10, 1ull << 20);
 
-  BENCHMARK_MAIN();
+BENCHMARK_TEMPLATE(accumulateRandom, std::vector<int>)
+    ->RangeMultiplier(2)
+    ->Range(1ull << 10, 1ull << 20);
+
+BENCHMARK_MAIN();
