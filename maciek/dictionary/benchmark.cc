@@ -9,12 +9,14 @@
 #include <fstream>
 #include <iostream>
 
-static std::vector<std::string> load() {
+static std::vector<std::string> load()
+{
   std::ifstream file("/etc/dictionaries-common/words");
   std::vector<std::string> words;
 
   std::string word;
-  for (std::string line; std::getline(file, line);) {
+  for (std::string line; std::getline(file, line);)
+  {
     words.push_back(line);
   }
 
@@ -22,9 +24,11 @@ static std::vector<std::string> load() {
   return words;
 }
 
-static std::vector<std::string> loadMangled() {
+static std::vector<std::string> loadMangled()
+{
   std::vector<std::string> words = load();
-  for (std::string &word : words) {
+  for (std::string &word : words)
+  {
     word[word.length() / 2] = '_';
   }
   return words;
@@ -34,12 +38,14 @@ std::vector<std::string> wordsIn;    // = load();
 std::vector<std::string> wordsNotIn; // = loadMangled();
 
 template <typename Dictionary>
-static void InDictionary(benchmark::State &state) {
+static void InDictionary(benchmark::State &state)
+{
   Dictionary dict(wordsIn);
 
   bool allIn = true;
   auto it = wordsIn.begin();
-  for (auto _ : state) {
+  for (auto _ : state)
+  {
     allIn = allIn && dict.isInDictionary(*it);
     ++it;
     if (it == wordsIn.end())
@@ -51,12 +57,14 @@ static void InDictionary(benchmark::State &state) {
 }
 
 template <typename Dictionary>
-static void NotInDictionary(benchmark::State &state) {
+static void NotInDictionary(benchmark::State &state)
+{
   Dictionary dict(wordsIn);
 
   bool someIn = false;
   auto it = wordsNotIn.begin();
-  for (auto _ : state) {
+  for (auto _ : state)
+  {
     someIn = someIn || dict.isInDictionary(*it);
     ++it;
     if (it == wordsNotIn.end())
@@ -73,7 +81,11 @@ BENCHMARK_TEMPLATE(NotInDictionary, SetDict);
 BENCHMARK_TEMPLATE(InDictionary, UnorderedSetDict);
 BENCHMARK_TEMPLATE(NotInDictionary, UnorderedSetDict);
 
-int main(int argc, char **argv) {
+BENCHMARK_TEMPLATE(InDictionary, SuperFastDict);
+BENCHMARK_TEMPLATE(NotInDictionary, SuperFastDict);
+
+int main(int argc, char **argv)
+{
   static const int DICT_SIZE = 100'000;
   std::vector<std::string> words =
       createVectorOfUniqueRandomStrings(DICT_SIZE * 2);
