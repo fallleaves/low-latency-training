@@ -1,5 +1,2 @@
 add_executable(vector_visit_benchmark vector_visit.cc)
 target_link_libraries(vector_visit_benchmark benchmark papi)
-
-add_executable(benchmark_dict benchmark_dictionary.cpp)
-target_link_libraries(benchmark_dict benchmark)
