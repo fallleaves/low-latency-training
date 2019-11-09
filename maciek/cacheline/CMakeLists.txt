@@ -1,0 +1,2 @@
+add_executable(cacheline_bench cachelineBench.cpp)
+target_link_libraries(cacheline_bench benchmark)
